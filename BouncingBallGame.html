@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BouncingBall</title>
+</head>
+<body>
+<canvas id="main" width="500" height="500" style="border: 1px solid"></canvas>
+<script>
+    class Ball {
+        constructor(x,y,r,color) {
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.color = color;
+            this.speed = 5;
+            this.flag = 'down';
+            this.canvas = document.getElementById('main');
+            this.ctx = this.canvas.getContext('2d');
+            this.number = 0;
+        }
+        draw() {
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        }
+        move() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            switch (this.flag) {
+                case 'down':
+                    this.moveDown();
+                    break;
+                case 'upLeft':
+                    this.moveUpLeft();
+                    break
+                case 'upRight':
+                    this.moveUpRight();
+                    break;
+                case 'downRight':
+                    this.moveDownRight();
+                    break;
+                case 'downLeft':
+                    this.moveDownLeft();
+                    break;
+            }
+            this.draw();
+        }
+        moveUpLeft() {
+            this.x -= this.number;
+            this.y -= this.speed;
+        }
+        moveUpRight() {
+            this.x += this.number;
+            this.y -= this.speed;
+        }
+        moveDown() {
+            this.y += this.speed;
+        }
+        moveDownRight() {
+            this.x += this.number;
+            this.y += this.speed;
+        }
+        moveDownLeft() {
+            this.x -= this.number;
+            this.y += this.speed;
+        }
+        checkVarBar(bar) {
+            if (this.y + this.r >= bar.y
+                && this.x >= bar.x && this.x <= bar.x + bar.width) {
+                this.flag = 'upLeft';
+                this.number = Math.floor(Math.random() * 10)
+            }
+        }
+        checkVarBorder() {
+            if (this.x - this.r <= 0) {
+                this.flag = 'upRight';
+                this.number = Math.floor(Math.random() * 10)
+            }
+            if (this.y - this.r <= 0) {
+                this.flag = 'downRight';
+                this.number = Math.floor(Math.random() * 10)
+            }
+            if (this.x + this.r >= this.canvas.width) {
+                this.flag = 'downLeft';
+                this.number = Math.floor(Math.random() * 10)
+            }
+        }
+    }
+    class Bar {
+        constructor(x, y, width, height, color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = color;
+            this.canvas = document.getElementById('main');
+            this.ctx = this.canvas.getContext('2d');
+        }
+        draw() {
+            this.ctx.beginPath();
+            this.ctx.rect(this.x, this.y, this.width, this.height);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        }
+        moveRight() {
+            this.x += 10;
+        }
+        moveLeft() {
+            this.x -= 10;
+        }
+    }
+    let ball = new Ball(200, 200, 15, "red")
+    let bar = new Bar(200, 450, 100, 10, "blue")
+    ball.draw();
+    function play() {
+        ball.move();
+        bar.draw();
+        ball.checkVarBar(bar)
+        ball.checkVarBorder();
+        requestAnimationFrame(play)
+    }
+    play();
+    window.addEventListener("keydown", function (evt) {
+        if (evt.key === 'ArrowRight') {
+            bar.moveRight();
+        } else {
+            bar.moveLeft();
+        }
+    })
+</script>
+</body>
+</html>
